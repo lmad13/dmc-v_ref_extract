@@ -56,11 +56,23 @@ averageV_w_s=np.average(V_ref,axis=(2,3))
 print averageV.shape
 print 'MIN: ',np.min(averageV_w_s[:,0]),np.min(averageV_w_s[:,1]),np.min(averageV_w_s[:,2])
 print 'MAX: ',np.max(averageV_w_s[:,0]),np.max(averageV_w_s[:,1]),np.max(averageV_w_s[:,2])
+
+averageV_s=np.average(V_ref,axis=(0,2,3))
+uncertainityV_s=[(np.max(averageV_w_s[:,0])-np.min(averageV_w_s[:,0]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,1])-np.min(averageV_w_s[:,1]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,2])-np.min(averageV_w_s[:,2]))/(2*np.sqrt(nWfns))]
+
+
+print 'AVE: ', averageV_s
 print 'UNC: ',uncertainityV_s
 
-uncertainityV_s=[(np.max(averageV_w_s[:,0])-np.min(averageV_w_s[:,0]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,1])-np.min(averageV_w_s[:,1]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,2])-np.min(averageV_w_s[:,2]))/(2*np.sqrt(nWfns))]
-averageV_s=np.average(V_ref,axis=(0,2,3))
-print 'AVE: ', averageV_s
 
 deltaE=[averageV_s[1]-averageV_s[0],averageV_s[2]-averageV_s[0]]
-unc_delta_E=[np.sqrt(),np.sqrt()]
+unc_delta_E=[np.sqrt(uncertainityV_s[0]**2+uncertainityV_s[1]**2),np.sqrt(uncertainityV_s[0]**2+uncertainityV_s[2]**2)]
+
+print 'from the two sides'
+for a,u in zip(deltaE,unc_delta_E):
+    print 'deltaE=',a,'+/-',u
+    
+print 'final answer:'
+print np.average(deltaE) ,'+/-',np.sqrt(unc_delta_E[0]**2+unc_delta_E[1]**2)
+
+print 'all done'
