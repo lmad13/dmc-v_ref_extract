@@ -56,8 +56,9 @@ averageV_w_s=np.average(V_ref,axis=(2,3))
 print averageV.shape
 print 'MIN: ',np.min(averageV_w_s[:,0]),np.min(averageV_w_s[:,1]),np.min(averageV_w_s[:,2])
 print 'MAX: ',np.max(averageV_w_s[:,0]),np.max(averageV_w_s[:,1]),np.max(averageV_w_s[:,2])
-
-averageV_s=np.average(V_ref,axis=(0,2,3))
+#print V_ref[0,0,0,:]
+#print V_ref[0,0,0,-5:]
+averageV_s=np.average(V_ref[:,:,:,-5:],axis=(0,2,3))
 uncertainityV_s=[(np.max(averageV_w_s[:,0])-np.min(averageV_w_s[:,0]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,1])-np.min(averageV_w_s[:,1]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,2])-np.min(averageV_w_s[:,2]))/(2*np.sqrt(nWfns))]
 
 
