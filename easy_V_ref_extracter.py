@@ -26,7 +26,7 @@ resultsFile.close()
 nRep=nRep+1 #nRep will be 9 if there are 10 reps complete
 nSteps=nSteps+1 #because n+1 are printed (25 prop steps=>26 numbers)
 
-print 'there are ', nRep,'repetitions'
+print 'there are ', nRep*len(fileList),'repetitions'
 V_ref=np.zeros((nWfns, 3, nRep*len(fileList),nSteps)) 
 #Structure: number of wavefunctions, number of repetitions, number of propagation steps, number of states (ground,V1left, v1right)
 stateDict={}
@@ -35,8 +35,9 @@ stateDict['1left']=1
 stateDict['1right']=2
 for n,fileIn in enumerate(fileList):
     resultsFile=open(fileIn,'r')
-    frep=int(fileIn.split('-')[3].split('.')[0])-1  #split by - then by .
-    print fileIn
+    #print fileIn
+    frep=int(fileIn.split('-')[-1].split('.')[0])-1  #split by - then by .
+
     for line in resultsFile:
         if "state:" in line:
             state=line.split()[1]+line.split()[3]
@@ -44,6 +45,7 @@ for n,fileIn in enumerate(fileList):
             iwfn=int(line.split()[7])
             rep=int(line.split()[3])
             irep=nRep*frep+rep
+            
         if "DISCRETE:" in line:
             istep=int(line.split()[4])
             #print iwfn,stateDict[state],istep,';',nRep,'x',frep,'+',rep,'=',irep
@@ -51,14 +53,18 @@ for n,fileIn in enumerate(fileList):
 
     resultsFile.close()
 V_ref=V_ref*au2wn
-averageV=np.zeros((nWfns,3))
-averageV_w_s=np.average(V_ref,axis=(2,3))
-print averageV.shape
+zerosAt=np.where(V_ref==0)
+print 'how many zeros??',len(zerosAt[0]), '.....',float(len(zerosAt[0]))/(nWfns* 3.0* nRep*len(fileList)*nSteps)*100.0,'%'
+print 'are there zeros??',zerosAt
+averageV_w_s=np.average(V_ref,axis=(2,3),weights=(V_ref>0))
+#averageV_w_s=np.average(V_ref,axis=(2,3))
+
 print 'MIN: ',np.min(averageV_w_s[:,0]),np.min(averageV_w_s[:,1]),np.min(averageV_w_s[:,2])
 print 'MAX: ',np.max(averageV_w_s[:,0]),np.max(averageV_w_s[:,1]),np.max(averageV_w_s[:,2])
 #print V_ref[0,0,0,:]
 #print V_ref[0,0,0,-5:]
-averageV_s=np.average(V_ref[:,:,:,-5:],axis=(0,2,3))
+averageV_s=np.average(V_ref[:,:,:,-5:],axis=(0,2,3),weights=(V_ref[:,:,:,-5:]>0))
+#averageV_s=np.average(V_ref[:,:,:,-5:],axis=(0,2,3))
 uncertainityV_s=[(np.max(averageV_w_s[:,0])-np.min(averageV_w_s[:,0]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,1])-np.min(averageV_w_s[:,1]))/(2*np.sqrt(nWfns)),(np.max(averageV_w_s[:,2])-np.min(averageV_w_s[:,2]))/(2*np.sqrt(nWfns))]
 
 
